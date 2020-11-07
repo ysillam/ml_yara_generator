@@ -1,9 +1,9 @@
-
+import re
 from os import path
 import random
-from ml_yara_generator.dataset import file_extractor
-from ml_yara_generator.conf import conf
-from ml_yara_generator.classifiers.default_classifier import Classifier
+from ml_yara_generator.src.dataset import file_extractor
+from ml_yara_generator.src.conf import conf
+from ml_yara_generator.src.classifiers.default_classifier import Classifier
 
 DATASET_LOC = "dataset"
 ROOT_DIR = path.dirname(path.abspath(__file__))
@@ -13,6 +13,18 @@ class YaraGenerator:
     """
     This class generates the Yara signature.
     """
+
+    def __init__(self, filetype):
+        """
+        This function generates the yara rule
+        :param filetype: filetype to be considered
+        """
+        self.yara = None
+
+        strings = self.collect_meaningful_strings(filetype)
+
+        self.yara = self.fill_template(strings, filetype)
+
     def fill_template(self, strings, filetype):
         """
         This function returns a valid yara rule for the given dataset
@@ -21,15 +33,17 @@ class YaraGenerator:
         :return:
         """
         magic = conf.MAGIC[filetype]
-        rule_name = filetype + "_" +str(random.randint(10000, 100000))
+        rule_name = filetype + "_" + str(random.randint(10000, 100000))
+        strings = [str(bytes(string, "utf-16")) for string in strings]
+        strings = [string[2:-1] for string in strings]
         template = """
 rule """ + rule_name + """
 {
     strings:
         
         $magic =  """ + magic + """
-        """ + \
-        "\n\t\t".join([ "$c" + str(idx) + " = \""+string+"\"" for idx, string in enumerate(strings)]) + """
+    """ + \
+        "\n\t".join(["$c" + str(idx) + " = /" + string + "/" for idx, string in enumerate(strings)]) + """
     condition:
         ($magic at 0) and (all of ($c*))
 }        
@@ -53,19 +67,14 @@ rule """ + rule_name + """
         indexes = importance.argsort()[-5:][::-1]
         return [feat_labels[x] for x in indexes]
 
-    def __init__(self, filetype):
+    def export_yara(self, output_dir):
         """
-        This function generates the yara rule
-        :param malware_folder: location of the malware dataset
-        :param filetype: filetype to be considered
+        Export yara to file
+        :param output_dir: Output location
+        :return: None
         """
-
-        strings = self.collect_meaningful_strings(filetype)
-
-        yara = self.fill_template(strings, filetype)
-        print(yara)
-
-
-
-
-
+        try:
+            with open(output_dir, "w") as file:
+                file.write(self.yara)
+        except:
+            print("Impossible to write yara")

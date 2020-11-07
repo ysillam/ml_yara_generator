@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator
-from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 
@@ -12,9 +12,13 @@ class Classifier(BaseEstimator):
     def __init__(self):
         self.pipe = Pipeline([
             ('vect', TfidfVectorizer(
-                ngram_range=(5, 5),
-                decode_error='ignore'),
-             ),
+                ngram_range=(4, 4),
+                decode_error='ignore',
+                encoding='utf-16',
+                analyzer='char',
+                max_features=None
+            ),
+        ),
             ('clf', RandomForestClassifier(
 
             )),
