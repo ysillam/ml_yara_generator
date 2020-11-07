@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator
-from sklearn.feature_extraction.text import TfidfVectorizer
+from ml_yara_generator.src.transformers.improved_tfidf import ImprovedTfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 
@@ -11,10 +11,10 @@ class Classifier(BaseEstimator):
 
     def __init__(self):
         self.pipe = Pipeline([
-            ('vect', TfidfVectorizer(
+            ('vect', ImprovedTfidfVectorizer(
                 ngram_range=(4, 4),
                 decode_error='ignore',
-                encoding='utf-16',
+                encoding='utf-8',
                 analyzer='char',
                 max_features=None
             ),

@@ -1,4 +1,3 @@
-import re
 from os import path
 import random
 from ml_yara_generator.src.dataset import file_extractor
@@ -34,8 +33,8 @@ class YaraGenerator:
         """
         magic = conf.MAGIC[filetype]
         rule_name = filetype + "_" + str(random.randint(10000, 100000))
-        strings = [str(bytes(string, "utf-16")) for string in strings]
-        strings = [string[2:-1] for string in strings]
+        strings = [bytes(string, "utf-8").hex() for string in strings]
+
         template = """
 rule """ + rule_name + """
 {
@@ -43,7 +42,7 @@ rule """ + rule_name + """
         
         $magic =  """ + magic + """
     """ + \
-        "\n\t".join(["$c" + str(idx) + " = /" + string + "/" for idx, string in enumerate(strings)]) + """
+        "\n\t".join(["$c" + str(idx) + " = {" + string + "}" for idx, string in enumerate(strings)]) + """
     condition:
         ($magic at 0) and (all of ($c*))
 }        
