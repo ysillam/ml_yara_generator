@@ -5,6 +5,16 @@ This projects gives ability to automatically generate yara rules based on ML ana
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
+
+```bash
+git clone https://github.com/ysillam/ml_yara_generator.git
+cd ml_yara_generator
+pyton setup.py install
+```
+And that's it !
+
+Once the project will be on PiPy, the project will be available from :
+
 ```bash
 pip install ml_yara_generator
 ```
@@ -14,9 +24,8 @@ pip install ml_yara_generator
 ```python
 from ml_yara_generator import YaraGenerator
 
-YaraGenerator('xls') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
+a = YaraGenerator('xls', dataset_benign, dataset_malicious)
+a.export_yara("output.yar")
 ```
 
 ## Contributing
