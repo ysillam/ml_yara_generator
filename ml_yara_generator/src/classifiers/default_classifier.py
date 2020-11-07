@@ -13,8 +13,7 @@ class Classifier(BaseEstimator):
         self.pipe = Pipeline([
             ('vect', ImprovedTfidfVectorizer(
                 ngram_range=(4, 4),
-                decode_error='ignore',
-                encoding='utf-8',
+                encoding='ISO-8859-1',
                 analyzer='char',
                 max_features=None
             ),

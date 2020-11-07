@@ -6,7 +6,11 @@ def main():
     :return:
     """
     files_location = r"malware_folder"
-    generator = YaraGenerator("xls")
+    generator = YaraGenerator(
+        "xls",
+        r"C:\Users\yohann\PycharmProjects\ml_yara_generator\ml_yara_generator\src\dataset\xls\benign",
+        r"C:\Users\yohann\PycharmProjects\ml_yara_generator\ml_yara_generator\src\dataset\xls\malicious"
+    )
     print(generator.yara)
 
 

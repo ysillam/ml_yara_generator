@@ -13,14 +13,14 @@ class YaraGenerator:
     This class generates the Yara signature.
     """
 
-    def __init__(self, filetype):
+    def __init__(self, filetype, set_benign, set_malicious):
         """
         This function generates the yara rule
         :param filetype: filetype to be considered
         """
         self.yara = None
 
-        strings = self.collect_meaningful_strings(filetype)
+        strings = self.collect_meaningful_strings(filetype, set_benign, set_malicious)
 
         self.yara = self.fill_template(strings, filetype)
 
@@ -33,7 +33,7 @@ class YaraGenerator:
         """
         magic = conf.MAGIC[filetype]
         rule_name = filetype + "_" + str(random.randint(10000, 100000))
-        strings = [bytes(string, "utf-8").hex() for string in strings]
+        strings = [bytes(string, "ISO-8859-1").hex() for string in strings]
 
         template = """
 rule """ + rule_name + """
@@ -41,7 +41,7 @@ rule """ + rule_name + """
     strings:
         
         $magic =  """ + magic + """
-    """ + \
+        """ + \
         "\n\t".join(["$c" + str(idx) + " = {" + string + "}" for idx, string in enumerate(strings)]) + """
     condition:
         ($magic at 0) and (all of ($c*))
@@ -49,13 +49,13 @@ rule """ + rule_name + """
 """
         return template
 
-    def collect_meaningful_strings(self, filetype):
+    def collect_meaningful_strings(self, filetype, set_benign, set_malicious):
         """
 
         :return:
         """
         # Extraction of the malicious / benign files
-        df = file_extractor.FileExtractor.extract(filetype)
+        df = file_extractor.FileExtractor.extract(filetype, set_benign, set_malicious)
 
         # Learning of TFIDF followed by RandomForest classifier
         pipe = Classifier()
