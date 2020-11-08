@@ -3,7 +3,7 @@ This projects gives ability to automatically generate yara rules based on ML ana
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install ml_yara_generator.
 
 
 ```bash
