@@ -56,6 +56,8 @@ rule """ + rule_name + """
         """
         # Extraction of the malicious / benign files
         df = file_extractor.FileExtractor.extract(filetype, set_benign, set_malicious)
+        if len(df.loc[df.label == 1]) == 0:
+               return []
 
         # Learning of TFIDF followed by RandomForest classifier
         pipe = Classifier()
