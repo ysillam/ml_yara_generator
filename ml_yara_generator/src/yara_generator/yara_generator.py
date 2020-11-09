@@ -34,8 +34,10 @@ class YaraGenerator:
         magic = conf.MAGIC[filetype]
         rule_name = filetype + "_" + str(random.randint(10000, 100000))
         strings = [bytes(string, "ISO-8859-1").hex() for string in strings]
-
-        template = """
+        
+        if magic is not None:
+            template = """
+        
 rule """ + rule_name + """
 {
     strings:
@@ -45,6 +47,20 @@ rule """ + rule_name + """
         "\n\t".join(["$c" + str(idx) + " = {" + string + "}" for idx, string in enumerate(strings)]) + """
     condition:
         ($magic at 0) and (all of ($c*))
+}        
+"""
+            
+        else:       
+            template = """
+        
+rule """ + rule_name + """
+{
+    strings:
+        
+        """ + \
+        "\n\t".join(["$c" + str(idx) + " = {" + string + "}" for idx, string in enumerate(strings)]) + """
+    condition:
+        (all of ($c*))
 }        
 """
         return template
